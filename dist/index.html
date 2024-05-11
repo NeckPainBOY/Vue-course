@@ -8,7 +8,14 @@
   <body>
     <script src="vue.js"></script>
     <script>
-      console.log(Vue);
+      // 响应式的数据变化，数据变化了我可以监控到数据的变化
+      // 数据的取值 和 更改值我们要监控到
+      const vm = new Vue({
+        data: {
+          name: 'aa',
+          age: 20,
+        },
+      });
     </script>
   </body>
 </html>
