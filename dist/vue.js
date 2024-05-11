@@ -10,7 +10,9 @@
 
         // 我们使用 Vue 的时候 $nextTick $data $attr ....
         var vm = this;
-        this.$options = options;
+        vm.$options = options;
+
+        // 初始化状态
         initState(vm);
       };
     }

@@ -4,8 +4,9 @@ export function initMixin(Vue){
         
         // 我们使用 Vue 的时候 $nextTick $data $attr ....
         const vm = this
-        this.$options = options
+        vm.$options = options
 
+        // 初始化状态
         initState(vm)
     }
 }
@@ -24,4 +25,5 @@ function initData(vm){
     typeof data === 'function' ? data.call(vm) : data
 
     console.log(data)
+    
 }
