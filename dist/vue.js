@@ -1,41 +1,150 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define(factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Vue = factory());
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Vue = factory());
 })(this, (function () { 'use strict';
 
-    function initMixin(Vue) {
-      Vue.prototype._init = function (options) {
-        // vue vm.$options 就是获取用户配置
-
-        // 我们使用 Vue 的时候 $nextTick $data $attr ....
-        var vm = this;
-        vm.$options = options;
-
-        // 初始化状态
-        initState(vm);
-      };
+  function _toPrimitive(t, r) {
+    if ("object" != typeof t || !t) return t;
+    var e = t[Symbol.toPrimitive];
+    if (void 0 !== e) {
+      var i = e.call(t, r || "default");
+      if ("object" != typeof i) return i;
+      throw new TypeError("@@toPrimitive must return a primitive value.");
     }
-    function initState(vm) {
-      var opts = vm.$options; // 获取所有的选项
-      if (opts.data) {
-        initData(vm);
+    return ("string" === r ? String : Number)(t);
+  }
+  function _toPropertyKey(t) {
+    var i = _toPrimitive(t, "string");
+    return "symbol" == typeof i ? i : i + "";
+  }
+  function _typeof(o) {
+    "@babel/helpers - typeof";
+
+    return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
+      return typeof o;
+    } : function (o) {
+      return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+    }, _typeof(o);
+  }
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+  function _defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor);
+    }
+  }
+  function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
+    Object.defineProperty(Constructor, "prototype", {
+      writable: false
+    });
+    return Constructor;
+  }
+
+  var Observer = /*#__PURE__*/function () {
+    function Observer(data) {
+      _classCallCheck(this, Observer);
+      // Object.defineProperty 只能劫持已经存在的属性(vue里面会为此单独写一些api $set $delete)
+      this.walk(data);
+    }
+    return _createClass(Observer, [{
+      key: "walk",
+      value: function walk(data) {
+        // 循环对象 对属性依次劫持
+        // "重新定义"属性 性能差
+        Object.keys(data).forEach(function (key) {
+          return defineReactive(data, key, data[key]);
+        });
       }
+    }]);
+  }();
+  function defineReactive(target, key, value) {
+    observe(value); // 对所有的对象都进行属性劫持
+    // 闭包 属性劫持
+    Object.defineProperty(target, key, {
+      get: function get() {
+        //   console.log(value);
+        // 取值的时候 会执行 get
+        return value;
+      },
+      set: function set(newValue) {
+        // 修改的时候 会执行set
+        if (newValue === value) return;
+        value = newValue;
+      }
+    });
+  }
+  function observe(data) {
+    // 对这个对象进行劫持
+    if (_typeof(data) !== "object" || data == null) {
+      return; // 只对对象进行劫持
     }
-    function initData(vm) {
-      var data = vm.$options.data; //data 可能是函数和对象
+    // 如果一个对象被劫持过了，那就不需要在劫持了
+    // （要判断一个对象是否被劫持过，可以增加一个实例，
+    // 用实例来判断是否被劫持过）
 
-      typeof data === 'function' ? data.call(vm) : data;
-      console.log(data);
+    return new Observer(data);
+  }
+
+  function initState(vm) {
+    var opts = vm.$options; // 获取所有的选项
+    if (opts.data) {
+      initData(vm);
     }
+  }
+  function proxy(vm, target, key) {
+    Object.defineProperty(vm, key, {
+      get: function get() {
+        return vm[target][key];
+      },
+      set: function set(newValue) {
+        vm[target][key] = newValue;
+      }
+    });
+  }
+  function initData(vm) {
+    var data = vm.$options.data; //data 可能是函数和对象
 
-    // 将所有的方法都耦合在一起
-    function Vue(options) {
-      this._init(options);
+    data = typeof data === "function" ? data.call(vm) : data;
+    vm._data = data; // 我将返回的对象放到了_data上
+    // 对数据进行劫持 vue2 里采用了一个 api defineProperty
+    observe(data);
+
+    // 将vm._data 用vm来代理就可以了
+    for (var key in data) {
+      proxy(vm, "_data", key);
     }
-    initMixin(Vue);
+  }
 
-    return Vue;
+  function initMixin(Vue) {
+    Vue.prototype._init = function (options) {
+      // vue vm.$options 就是获取用户配置
+
+      // 我们使用 Vue 的时候 $nextTick $data $attr ....
+      var vm = this;
+      vm.$options = options;
+
+      // 初始化状态
+      initState(vm);
+    };
+  }
+
+  // 将所有的方法都耦合在一起
+  function Vue(options) {
+    this._init(options);
+  }
+  initMixin(Vue);
+
+  return Vue;
 
 }));
 //# sourceMappingURL=vue.js.map
