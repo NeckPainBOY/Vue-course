@@ -18,12 +18,16 @@
             address: {
               address1: "guandong",
             },
+            nameArray: [],
           };
         },
       });
 
       console.log(vm);
       console.log(vm._data.age);
+      console.log((vm.name = vm.address));
+      vm.nameArray.push("SPB");
+      // vm.nameArray.push("SPC");
     </script>
   </body>
 </html>
