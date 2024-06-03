@@ -1,4 +1,5 @@
 import { initMixin } from "./init";
+import { initLifeCycle } from "./lifecycle";
 
 // 将所有的方法都耦合在一起
 function Vue(options) {
@@ -6,5 +7,6 @@ function Vue(options) {
 }
 
 initMixin(Vue);
+initLifeCycle(Vue);
 
 export default Vue;

@@ -295,13 +295,41 @@
     var ast = parseHTML(template);
 
     // 2. 生成 render 方法 ( render 方法执行后的放回的结果就是 虚拟 DOM)
-    // console.log(ast);
-
-    codegen(ast);
     // render(h){
     //     return h('div',{id: 'app'},h('div',{style:{color:'red'}}, _v(_s(name) +'hello'),_c('span',undefined,_v(_s(age)))))
     // }
+
+    var code = codegen(ast);
+    // 模板引擎的实现原理就是 with + new Function
+    code = "with(this){return ".concat(code, "};");
+    var render = new Function(code); // 根据代码生成 render 函数
+
+    return render;
   }
+
+  function initLifeCycle(Vue) {
+    Vue.prototype._update = function () {
+      console.log("update");
+    };
+    Vue.prototype._render = function () {
+      console.log("render");
+    };
+  }
+  function mountComponent(vm, el) {
+    // 1. 调用 render 方法产生虚拟节点 虚拟dom
+    vm._update(vm._render()); // vm.$options.render() 虚拟节点
+    // 2. 根据虚拟 dom 生成真实 dom
+
+    // 3. 插入到 el 中
+  }
+
+  // vue 核心流程
+  // 1）创建了响应式数据
+  // 2）模板转换成 ast 树
+  // 3）将 ast 语法树转换了 render 函数
+  // 4）后续每次数据更新可以只执行 render 函数（无需再次执行 ast 转换过程）
+  // render 函数会去产生虚拟节点（使用响应式数据）
+  // 根据生成虚拟节点创造真实的 dom
 
   // 重写数组中的部分方法
   var oldArrayProto = Array.prototype; // 获取数组原型
@@ -471,13 +499,15 @@
             template = ops.template;
           }
         }
-        if (template) {
+        if (template && el) {
           var render = compileToFunction(template);
           ops.render = render; // jsx 最终会被编译成 h('xxx')
         }
         // console.log(template);
       }
-      ops.render; // 最终可以获取 render 方法
+      // ops.render; // 最终可以获取 render 方法
+
+      mountComponent(vm); // 组件挂载
 
       // script 标签引用的 vue.global.js 这个编译过程是在浏览器运行的
       // runtime 是不包含模板编译的, 整个编译时打包的时候通过 loader 来转义 .vue 文件的，用 runtime 的时候不能使用 template
@@ -489,6 +519,7 @@
     this._init(options);
   }
   initMixin(Vue);
+  initLifeCycle(Vue);
 
   return Vue;
 
