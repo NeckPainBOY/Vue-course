@@ -8,8 +8,9 @@
   <body>
     <script src="vue.js"></script>
     <div id="app">
-      <div>{{ name }}</div>
+      <div style="color: red; background: yellow">{{ name }}</div>
       <div>{{ age }}</div>
+      <div>{{ name }} age: {{ age }} name</div>
     </div>
     <script>
       // 响应式的数据变化，数据变化了我可以监控到数据的变化
@@ -30,7 +31,7 @@
         //   return createElement("div", {});
         // },
       });
-      vm.$mount('#app')
+      vm.$mount("#app");
       // console.log(vm);
       // console.log(vm._data.age);
       // console.log((vm.name = vm.address));

@@ -15,8 +15,8 @@ methods.forEach((method) => {
     let inserted;
     let ob = this.__ob__; // 这里的 this 指向 data，因为最后是 data 调用了数组里面的方法
     // this.__ob__ 为 Observe 的实例
-    console.log('this')
-    console.log(this)
+    // console.log('this')
+    // console.log(this)
     switch (method) {
       case "push":
       case "unshift":

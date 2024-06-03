@@ -38,8 +38,8 @@ export function defineReactive(target, key, value) {
       // 取值的时候 会执行 get
       return value;
     },
+    // 修改的时候 会执行set
     set(newValue) {
-      // 修改的时候 会执行set
       if (newValue === value) return;
       observe(newValue); // newValue为object时需要重新绑定
       value = newValue;

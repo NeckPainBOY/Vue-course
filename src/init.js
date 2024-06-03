@@ -10,6 +10,7 @@ export function initMixin(Vue) {
 
     // 初始化状态
     initState(vm);
+
     if (options.el) {
       vm.$mount(options.el);
     }
