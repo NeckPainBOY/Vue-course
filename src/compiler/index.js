@@ -15,7 +15,7 @@ function genProps(attrs) {
       attr.value = obj;
     }
     str += `${attr.name}:${JSON.stringify(attr.value)},`;
-    console.log(str);
+    // console.log(str);
   }
   return `{${str.slice(0, -1)}}`;
 }
@@ -48,9 +48,8 @@ function gen(node) {
       if (lastIndex < text.length) {
         tokens.push(JSON.stringify(text.slice(lastIndex)));
       }
-      console.log(tokens);
+      return `_v(${tokens.join("+")})`;
     }
-    return "xxx";
   }
 }
 
@@ -59,7 +58,7 @@ function genChildren(children) {
 }
 
 function codegen(ast) {
-  console.log(ast.children);
+  // console.log(ast.children);
   let children = genChildren(ast.children);
   let code = `_c('${ast.tag}',${
     ast.attrs.length > 0 ? genProps(ast.attrs) : "null"

@@ -237,7 +237,7 @@
         attr.value = obj;
       }
       str += "".concat(attr.name, ":").concat(JSON.stringify(attr.value), ",");
-      console.log(str);
+      // console.log(str);
     };
     for (var i = 0; i < attrs.length; i++) {
       _loop();
@@ -272,9 +272,8 @@
         if (lastIndex < text.length) {
           tokens.push(JSON.stringify(text.slice(lastIndex)));
         }
-        console.log(tokens);
+        return "_v(".concat(tokens.join("+"), ")");
       }
-      return "xxx";
     }
   }
   function genChildren(children) {
@@ -283,7 +282,7 @@
     }).join(",");
   }
   function codegen(ast) {
-    console.log(ast.children);
+    // console.log(ast.children);
     var children = genChildren(ast.children);
     var code = "_c('".concat(ast.tag, "',").concat(ast.attrs.length > 0 ? genProps(ast.attrs) : "null").concat(ast.children.length > 0 ? ",".concat(children) : "", ")");
     return code;
